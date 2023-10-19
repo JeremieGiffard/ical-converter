@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"os"
 	"strings"
@@ -16,7 +17,18 @@ func main() {
 	fmt.Println("\n\n\n\nslice converted", sliceStr)
 	isCallendarValid(sliceStr)
 
-	columnsSlice := []string{"dtstart", "dtend", "description", "location", "summary"}
+	csvData := [][]string{
+		{"dtstart", "dtend", "description", "location", "summary"}}
+
+	file, e := os.Create("./callendar-converted.csv")
+	if e != nil {
+		fmt.Println(e)
+	}
+	writer := csv.NewWriter(file)
+	e = writer.WriteAll(csvData)
+	if e != nil {
+		fmt.Println(e)
+	}
 
 }
 
