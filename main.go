@@ -12,10 +12,11 @@ func main() {
 		fmt.Println(err)
 	}
 	str := string(b)
-	fmt.Println("str", str)
 	sliceStr := strings.Split(strings.ReplaceAll(str, "\r\n", "\n"), "\n")
 	fmt.Println("\n\n\n\nslice converted", sliceStr)
 	isCallendarValid(sliceStr)
+
+	columnsSlice := []string{"dtstart", "dtend", "description", "location", "summary"}
 
 }
 
