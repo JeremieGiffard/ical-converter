@@ -8,13 +8,7 @@ import (
 )
 
 func main() {
-	b, err := os.ReadFile("callendar-example.ics")
-	if err != nil {
-		fmt.Println(err)
-	}
-	str := string(b)
-	sliceStr := strings.Split(strings.ReplaceAll(str, "\r\n", "\n"), "\n")
-	fmt.Println("\n\n\n\nslice converted", sliceStr)
+	sliceStr, _ := readFileAndSlice("callendar-example.ics")
 	isCallendarValid(sliceStr)
 
 	csvData := [][]string{
@@ -30,6 +24,17 @@ func main() {
 		fmt.Println(e)
 	}
 
+}
+
+func readFileAndSlice(filePath string) ([]string, error) {
+	b, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	str := string(b)
+	sliceStr := strings.Split(strings.ReplaceAll(str, "\r\n", "\n"), "\n")
+	fmt.Println("\n\n\n\nslice converted", sliceStr)
+	return sliceStr, err
 }
 
 func isCallendarValid(sliceStr []string) bool {
