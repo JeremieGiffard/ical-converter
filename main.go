@@ -35,6 +35,45 @@ func main() {
 	}
 
 }
+func readFileAndSlice(filePath string) ([]string, error) {
+	b, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	str := string(b)
+	sliceStr := strings.Split(strings.ReplaceAll(str, "\r\n", "\n"), "\n")
+	//fmt.Println("\n\n\n\nslice converted", sliceStr)
+	return sliceStr, err
+}
+
+func isCallendarValid(sliceStr []string) bool {
+	var isValid = false
+
+	if sliceStr[0] == "BEGIN:VCALENDAR" && sliceStr[len(sliceStr)-1] == "END:VCALENDAR" {
+		isValid = true
+	}
+	fmt.Println("\n isCallendarValid", isValid)
+	return isValid
+}
+func makeCsvMapFromIcs(sliceStr []string) map[string]string {
+	var csvDataTable = make(map[string]string)
+	for _, v := range sliceStr {
+		separator := ":"
+		if strings.Contains(v, "DTSTART;") || strings.Contains(v, "DTEND;") || strings.Contains(v, "ATTACH;") {
+			separator = ";"
+		}
+		SliceKeyAndValue := strings.SplitN(v, separator, 2)
+
+		if strings.Contains(SliceKeyAndValue[1], "TZID") {
+			tempSlice := strings.SplitN(SliceKeyAndValue[1], ":", 2)
+			SliceKeyAndValue[1] = tempSlice[1]
+		}
+		csvDataTable[SliceKeyAndValue[0]] = SliceKeyAndValue[1]
+
+	}
+	fmt.Printf("%q\n", csvDataTable)
+	return csvDataTable
+}
 
 func filterColumn(mapStr map[string]string, ColumnsWanted []string) ([]string, []string) {
 	keysToReturn := []string{}
@@ -49,41 +88,4 @@ func filterColumn(mapStr map[string]string, ColumnsWanted []string) ([]string, [
 		fmt.Println("After filter value ", valuesToReturn)
 	}
 	return keysToReturn, valuesToReturn
-}
-
-func readFileAndSlice(filePath string) ([]string, error) {
-	b, err := os.ReadFile(filePath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	str := string(b)
-	sliceStr := strings.Split(strings.ReplaceAll(str, "\r\n", "\n"), "\n")
-	//fmt.Println("\n\n\n\nslice converted", sliceStr)
-	return sliceStr, err
-}
-
-func isCallendarValid(sliceStr []string) bool {
-	var isValid = false
-	fmt.Println("\n isCallendarValid()", " sliceStr[0] =", sliceStr[0], " sliceStr[last] =", sliceStr[len(sliceStr)-1])
-	if sliceStr[0] == "BEGIN:VCALENDAR" && sliceStr[len(sliceStr)-1] == "END:VCALENDAR" {
-		isValid = true
-	}
-
-	return isValid
-}
-
-func makeCsvMapFromIcs(sliceStr []string) map[string]string {
-	var csvDataTable = make(map[string]string)
-	for _, v := range sliceStr {
-		separator := ":"
-		if strings.Contains(v, "DTSTART;") || strings.Contains(v, "DTEND;") || strings.Contains(v, "ATTACH;") {
-			separator = ";"
-		}
-
-		SliceKeyAndValue := strings.SplitN(v, separator, 2)
-		csvDataTable[SliceKeyAndValue[0]] = SliceKeyAndValue[1]
-
-	}
-	fmt.Printf("%q\n", csvDataTable)
-	return csvDataTable
 }
