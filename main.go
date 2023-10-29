@@ -65,14 +65,38 @@ func makeCsvMapFromIcs(sliceStr []string) map[string]string {
 		SliceKeyAndValue := strings.SplitN(v, separator, 2)
 
 		if strings.Contains(SliceKeyAndValue[1], "TZID") {
-			tempSlice := strings.SplitN(SliceKeyAndValue[1], ":", 2)
-			SliceKeyAndValue[1] = tempSlice[1]
+			csvDataTable = handleDateTimeFormat(SliceKeyAndValue)
+
 		}
 		csvDataTable[SliceKeyAndValue[0]] = SliceKeyAndValue[1]
 
 	}
 	fmt.Printf("%q\n", csvDataTable)
 	return csvDataTable
+}
+func handleDateTimeFormat(SliceDateTime []string) map[string]string {
+	var csvDataTable = make(map[string]string)
+	//example Date data : TZID=Europe/Paris:20230926T210000
+	tempSlice := strings.SplitN(SliceDateTime[1], ":", 2)
+
+	var DateAndTime []string
+	if strings.Contains(tempSlice[1], "T") {
+		//example Date data : 20230926T210000
+		DateAndTime = strings.SplitN(tempSlice[1], "T", 2)
+		csvDataTable["Start Date"] = DateAndTime[0]
+		csvDataTable["Start Time"] = DateAndTime[0]
+	}
+
+	if SliceDateTime[0] == "dtstart" {
+		csvDataTable["Start Date"] = DateAndTime[0]
+		csvDataTable["Start Time"] = DateAndTime[1]
+	} else if SliceDateTime[0] == "dtend" {
+
+	}
+	SliceDateTime[1] = tempSlice[1]
+
+	return csvDataTable
+
 }
 
 func filterColumn(mapStr map[string]string, ColumnsWanted []string) ([]string, []string) {
