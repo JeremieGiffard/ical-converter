@@ -4,14 +4,41 @@ import (
 	"fmt"
 	"os"
 
-	ics "github.com/arran4/golang-ical"
+	"github.com/apognu/gocal"
 )
 
 func main() {
 	b, _ := os.Open("callendar-example.ics")
-	cal, err := ics.ParseCalendar(b)
-	fmt.Println(cal, "/n")
-	fmt.Println(err)
+	defer b.Close()
+
+	cal := gocal.NewParser(b)
+	cal.SkipBounds = true // take all timeline
+	cal.Parse()
+
+	vEven := make([]string)
+	for i, v := range cal.Events {
+		fmt.Println(i)
+		// fmt.Println(fmt.Sprintf("%v", v))
+
+		// vEven = append(vEven, [])
+	}
+	// fmt.Println(vEven)
+
+	SliceColumn := []string{"Start Date", "End Date", "description", "location", "summary"}
+	AllCSV := [][]string{}
+	AllCSV = append(AllCSV, SliceColumn)
+	fmt.Println(AllCSV)
+	// AllCSV = append(AllCSV, )
+	// file, e := os.Create("./callendar-converted.csv")
+	// if e != nil {
+	// 	fmt.Println(e)
+	// }
+	// writer := csv.NewWriter(file)
+	// e = writer.WriteAll(vEven)
+	// if e != nil {
+	// 	fmt.Println(e)
+	// }
+
 	// sliceStr, _ := readFileAndSlice("callendar-example.ics")
 	// isCallendarValid(sliceStr)
 
